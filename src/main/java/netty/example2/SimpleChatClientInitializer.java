@@ -1,4 +1,4 @@
-package netty;
+package netty.example2;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -13,6 +13,12 @@ import io.netty.handler.codec.string.StringEncoder;
  * 与服务端类似
  */
 public class SimpleChatClientInitializer extends ChannelInitializer<SocketChannel> {
+    private String name;
+
+    public SimpleChatClientInitializer(String name) {
+        this.name = name;
+    }
+
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -24,7 +30,7 @@ public class SimpleChatClientInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("decoder", new StringDecoder());
         pipeline.addLast("encoder", new StringEncoder());
         // 处理器
-        pipeline.addLast("handler", new SimpleChatClientHandler());
+        pipeline.addLast(this.name, new SimpleChatClientHandler());
     }
 
 }

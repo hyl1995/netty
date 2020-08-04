@@ -1,4 +1,4 @@
-package netty;
+package netty.example2;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,7 +23,7 @@ public class SimpleChatServerHandler extends SimpleChannelInboundHandler<String>
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         // 广播加入消息
-        channels.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " 加入\n");
+        channels.writeAndFlush("[SERVER] - " + ctx.name() + " 加入\n");
         channels.add(incoming);        // 存入列表
     }
 
@@ -48,9 +48,9 @@ public class SimpleChatServerHandler extends SimpleChannelInboundHandler<String>
         Channel incoming = ctx.channel();
         for (Channel channel : channels) {        // 遍历所有连接的客户端
             if (channel != incoming) {            // 其他客户端
-                channel.writeAndFlush("[" + incoming.remoteAddress() + "] " + msg + "\n");
+                channel.writeAndFlush(String.format("[%s]：%s\n", incoming.remoteAddress(), msg));
             } else {                            // 自己
-                channel.writeAndFlush("[you] " + msg + "\n");
+                channel.writeAndFlush(String.format("[%s]：%s\n", "我", msg));
             }
         }
     }

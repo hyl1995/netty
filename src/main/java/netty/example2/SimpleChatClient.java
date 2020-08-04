@@ -1,5 +1,6 @@
-package netty;
+package netty.example2;
 
+import cn.hutool.core.lang.Console;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -16,10 +17,12 @@ import java.io.InputStreamReader;
 public class SimpleChatClient {
     private final String host;        // IP
     private final int port;        // 端口
+    private final String name;        // 用户名
 
-    public SimpleChatClient(String host, int port) {
+    public SimpleChatClient(String host, int port, String name) {
         this.host = host;
         this.port = port;
+        this.name = name;
     }
 
     // 配置并运行客户端
@@ -29,10 +32,11 @@ public class SimpleChatClient {
             Bootstrap b = new Bootstrap();        // 客户端辅助启动类
             b.group(group)                                    // 客户端只需要一个用来接收并处理连接
                     .channel(NioSocketChannel.class)            // 设置如何接受连接
-                    .handler(new SimpleChatClientInitializer());// 配置 channel
+                    .handler(new SimpleChatClientInitializer(this.name));// 配置 channel
             // 连接服务器
             Channel channel = b.connect(host, port).sync().channel();
             // 读取控制台输入字符
+            Console.log("请输入发送的消息：");
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
                 // 每行成一帧输出，以"\r\n"结尾
@@ -44,9 +48,4 @@ public class SimpleChatClient {
             group.shutdownGracefully();    // 关闭
         }
     }
-
-    public static void main(String[] args) throws Exception {
-        new SimpleChatClient("localhost", 8080).run();        // 启动客户端
-    }
-
 }
